@@ -1,71 +1,70 @@
-# Hactiv\_x\_IBM\_Data\_Sesion — Dokumentasi Notebook Google Colab
+# Hactiv\_x\_IBM\_Data\_Sesion — Google Colab Notebook Documentation
 
-**Deskripsi singkat**
-Notebook ini berisi contoh eksperimen dasar di Google Colab: instalasi paket, pengambilan token dari Colab, pemanggilan API model (Replicate & Hugging Face), contoh penggunaan `transformers` (Flan-T5), serta contoh loop dan pembacaan CSV. README ini menjelaskan setiap bagian, cara setup, masalah umum, dan saran perbaikan.
+**Short description**
+This notebook contains basic experiments in Google Colab: package installation, retrieving tokens from Colab, calling API models (Replicate & Hugging Face), using `transformers` pipelines (Flan-T5), simple Python loops, and reading CSV files. This README explains each section, how to set up, common issues, and suggested improvements.
 
-📂 **Link ke Notebook Colab:** [Buka di Google Colab](https://colab.research.google.com/drive/1BbV_ZsSlhclE9wFd2-oun67hEpjx7iGa?usp=sharing)
-
----
-
-## Daftar isi
-
-1. Tujuan
-2. Prasyarat
-3. Instalasi & dependensi
-4. Mengatur token / environment variable
-5. Penjelasan isi sel (cell-by-cell)
-6. Masalah umum & cara perbaikan
-7. Tips menjalankan di Colab (GPU vs CPU)
-8. File data
-9. Contoh `requirements.txt`
-10. Keamanan & best practice
-11. Lisensi
+📂 **Colab Notebook Link:** [Open in Google Colab](https://colab.research.google.com/drive/1BbV_ZsSlhclE9wFd2-oun67hEpjx7iGa?usp=sharing)
 
 ---
 
-## 1. Tujuan
+## Table of Contents
 
-Notebook ini bertujuan sebagai *starter* untuk:
+1. Purpose
+2. Prerequisites
+3. Installation & dependencies
+4. Token / environment variable setup
+5. Code walkthrough (cell-by-cell)
+6. Common issues & fixes
+7. Tips for running in Colab (GPU vs CPU)
+8. Data files
+9. Example `requirements.txt`
+10. Security & best practices
+11. License
 
-* Praktik instalasi paket ML/LLM
-* Memanggil model via Hugging Face Inference API
-* Mencoba pipeline `transformers` (text2text-generation)
-* Melatih kebiasaan membaca CSV dan looping di Python
+---
 
-Catatan: notebook ini tampak dibuat untuk percobaan — ada beberapa baris yang berulang/typo yang perlu dibenahi agar lebih stabil.
+## 1. Purpose
 
-## 2. Prasyarat
+The notebook serves as a starter example for:
 
-* Akun GitHub (jika ingin menyimpan notebook)
-* Akun Hugging Face (untuk `hf_token`) dan token akses
-* (Opsional) Akun Replicate (untuk `REPLICATE_API_TOKEN`) bila ingin pakai API Replicate
-* Google Colab (direkomendasikan karena mudah) atau environment Python lokal
+* Installing ML/LLM-related Python packages
+* Accessing models via Hugging Face Inference API
+* Trying out the `transformers` pipeline (`text2text-generation`)
+* Practicing basic Python loops and CSV data loading
 
-## 3. Instalasi & dependensi
+Note: The notebook seems experimental, with some repeated code and typos that can be cleaned up for stability.
 
-Gabungkan dan jalankan satu blok instalasi supaya runtime bersih:
+## 2. Prerequisites
+
+* GitHub account (if saving/sharing the notebook)
+* Hugging Face account (for `hf_token`) and access token
+* (Optional) Replicate account (for `REPLICATE_API_TOKEN`)
+* Google Colab (recommended) or local Python environment
+
+## 3. Installation & dependencies
+
+Run a single clean installation block:
 
 ```bash
-# update pip dulu (opsional)
+# optional: update pip
 pip install -U pip
 
-# paket utama yang dipakai di notebook
+# main dependencies
 pip install replicate langchain langchain-community huggingface_hub==0.23.0 transformers pandas
 ```
 
-> Catatan: di notebook asli ada beberapa perintah `!pip install` yang duplikat. Cukup jalankan satu perintah ringkas di atas. Versi `huggingface_hub==0.23.0` dicantumkan sesuai contoh; kalau terjadi konflik, hapus versi spesifik atau sesuaikan dengan versi `transformers` yang Anda gunakan.
+> Note: The original notebook installs the same libraries multiple times. The single command above is enough. Pinning `huggingface_hub==0.23.0` is optional — remove it if version conflicts occur.
 
-## 4. Mengatur token / environment variable
+## 4. Token / environment variable setup
 
-Notebook memakai dua token (contoh):
+Two tokens are required (examples):
 
-* `REPLICATE_API_TOKEN` — token untuk Replicate (jika dipakai)
-* `HF_TOKEN` — token untuk Hugging Face
+* `REPLICATE_API_TOKEN` — for Replicate API
+* `HF_TOKEN` — for Hugging Face API
 
-**Contoh cara set di Colab (aman):**
+**Safe way in Colab:**
 
 ```py
-# cara interaktif: jangan commit token ke repo!
 from getpass import getpass
 import os
 
@@ -73,7 +72,7 @@ os.environ["REPLICATE_API_TOKEN"] = getpass("Enter your Replicate token: ")
 os.environ["HF_TOKEN"] = getpass("Enter your Hugging Face token: ")
 ```
 
-Notebook asli menggunakan `google.colab.userdata` (jika tersedia) seperti:
+The notebook uses `google.colab.userdata` if available:
 
 ```py
 from google.colab import userdata
@@ -83,106 +82,97 @@ os.environ["REPLICATE_API_TOKEN"] = api_token
 hf_token = userdata.get("hf_token")
 ```
 
-> **PENTING**: ada typo di notebook asli — `os.environ["REPLIACATE_API_TOKEN"]` (salah tulis). Gunakan `REPLICATE_API_TOKEN`.
+> **Important:** The original notebook has a typo: `REPLIACATE_API_TOKEN`. Use the correct spelling: `REPLICATE_API_TOKEN`.
 
-## 5. Penjelasan isi sel (cell-by-cell)
+## 5. Code walkthrough (cell-by-cell)
 
-Berikut ringkasan tiap bagian kode di notebook yang Anda kirim:
+### 1. Simple variables & print
 
-1. **Variabel sederhana & print**
+```py
+name = 'Glen'
+age = 20
+print('Hello my name is', name, 'and I am', age, 'years old')
+```
 
-   ```py
-   nama = 'Glen'
-   umur = 20
-   print('Halo nama saya adalah', nama, ' dan umur saya ', umur)
-   ```
+* Simple environment check.
 
-   * Contoh sederhana untuk cek environment Python.
+### 2. Package installation (repeated)
 
-2. **Instalasi paket (beberapa kali diulang)**
+* The notebook installs `replicate`, `langchain_community`, `huggingface_hub`, etc. — these can be merged into one block (see section 3).
 
-   * `!pip install replicate`, `!pip install langchain_community`, dll.
-   * Saran: gabungkan jadi satu blok instalasi seperti di bagian 3.
+### 3. Token setup
 
-3. **Ambil token dari Colab dan set environment**
+```py
+from google.colab import userdata
+import os
+api_token = userdata.get("api_token")
+os.environ["REPLICATE_API_TOKEN"] = api_token
+```
 
-   ```py
-   from google.colab import userdata
-   import os
-   api_token = userdata.get("api_token")
-   os.environ["REPLICATE_API_TOKEN"] = api_token  # perbaiki typo jika perlu
-   ```
+### 4. Hugging Face InferenceClient
 
-   * Pastikan `userdata.get(...)` tidak mengembalikan `None`.
+```py
+from huggingface_hub import InferenceClient
+hf_token = userdata.get("hf_token")
+client = InferenceClient(model="mistralai/Mistral-7B-Instruct-v0.2", token=hf_token)
+response = client.chat_completion(messages=[{"role":"user","content":"Where is Batam?"}], max_tokens=128)
+print(response.choices[0].message["content"])
+```
 
-4. **Hugging Face InferenceClient**
+* Requires valid token and model access.
 
-   ```py
-   from huggingface_hub import InferenceClient
-   hf_token = userdata.get("hf_token")
-   client = InferenceClient(model="mistralai/Mistral-7B-Instruct-v0.2", token=hf_token)
-   response = client.chat_completion(messages=[{"role":"user","content":"Dimana Batam?"}], max_tokens=128)
-   print(response.choices[0].message["content"])
-   ```
+### 5. Loop examples & sentiment classification prompt
 
-   * Pastikan token valid dan model tersedia untuk akun Anda (beberapa model butuh akses khusus).
+* Prints sample list items and builds sentiment classification prompts.
+* Prompts are printed but not yet connected to an API.
 
-5. **Contoh loop & prompt untuk klasifikasi**
+### 6. Reading CSV with pandas
 
-   * Menampilkan elemen list, membuat prompt sederhana untuk klasifikasi sentiment.
-   * Contoh prompt belum terhubung ke API — hanya mencetak prompt.
+```py
+import pandas as pd
+df = pd.read_csv('personality_datasert.csv')
+df.head()
+```
 
-6. **Load CSV dengan pandas**
+* Ensure `personality_datasert.csv` is uploaded to Colab or accessible via correct path.
 
-   ```py
-   df = pd.read_csv('personality_datasert.csv')
-   df.head()
-   ```
-
-   * Pastikan file `personality_datasert.csv` diupload ke Colab atau path benar.
-
-7. **Transformers pipeline (google/flan-t5-base)**
-
-   ```py
-   from transformers import pipeline
-   generator = pipeline("text2text-generation", model="google/flan-t5-base")
-   resp = generator("Apa itu introvert?")
-   print(resp[0]["generated_text"])
-   ```
-
-   * Versi berikutnya memakai parameter `device=-1` (CPU). Di Colab kalau ada GPU, set `device=0`.
-   * Contoh lanjutan menggunakan `num_beams`, `do_sample`, `top_p` untuk mengontrol keluaran.
-
-## 6. Masalah umum & cara perbaikan
-
-* **Tidak ada token / `None`**: `userdata.get(...)` mengembalikan `None` → masukkan token lewat `getpass` atau `os.environ` manual.
-* **Typo environment variable**: `REPLIACATE_API_TOKEN` salah ketik. Gunakan `REPLICATE_API_TOKEN`.
-* **ModuleNotFoundError**: setelah `pip install`, restart runtime (Runtime → Restart runtime) sebelum `import` agar modul yang baru terinstal terdeteksi.
-* **Model tidak dapat diakses**: model di InferenceClient mungkin memerlukan akses spesial atau subscription — periksa akses model di Hugging Face.
-* **Out of memory** saat memakai `transformers` di GPU: gunakan model yang lebih kecil atau jalankan di CPU.
-
-## 7. Tips menjalankan di Colab (GPU vs CPU)
-
-* Untuk mempercepat `transformers`, aktifkan Runtime → Change runtime type → Hardware accelerator → GPU.
-* Di `pipeline`, gunakan `device=0` untuk GPU. Contoh:
+### 7. Transformers pipeline (Flan-T5)
 
 ```py
 from transformers import pipeline
-generator = pipeline(
-    "text2text-generation",
-    model="google/flan-t5-base",
-    device=0  # pakai GPU (0)
-)
+generator = pipeline("text2text-generation", model="google/flan-t5-base")
+resp = generator("What is an introvert?")
+print(resp[0]["generated_text"])
 ```
 
-* Jika pakai CPU, set `device=-1`.
+* Later cells refine generation with beam search, sampling, and `top_p` parameters.
 
-## 8. File data
+## 6. Common issues & fixes
 
-* `personality_datasert.csv` harus diupload ke Colab (gunakan menu Files → Upload) atau simpan di Google Drive dan mount drive.
-* Pastikan kolom dan encoding CSV sesuai (biasanya UTF-8).
+* **Missing token (`None`)**: `userdata.get(...)` may return `None`. Use `getpass` or set manually.
+* **Typo in env var**: Replace `REPLIACATE_API_TOKEN` with `REPLICATE_API_TOKEN`.
+* **ModuleNotFoundError**: Restart Colab runtime after installing packages.
+* **Model access errors**: Some Hugging Face models require special access/subscription.
+* **Out of memory on GPU**: Use a smaller model or CPU fallback.
 
-## 9. Contoh `requirements.txt`
+## 7. Tips for Colab (GPU vs CPU)
+
+* Enable GPU: Runtime → Change runtime type → Hardware accelerator → GPU.
+* Set pipeline device:
+
+```py
+from transformers import pipeline
+generator = pipeline("text2text-generation", model="google/flan-t5-base", device=0)  # GPU
+```
+
+* Use `device=-1` for CPU.
+
+## 8. Data files
+
+* Upload `personality_datasert.csv` manually in Colab (Files → Upload) or mount Google Drive.
+* Ensure proper encoding (UTF-8).
+
+## 9. Example `requirements.txt`
 
 ```
 replicate
@@ -193,24 +183,25 @@ transformers
 pandas
 ```
 
-## 10. Keamanan & best practice
+## 10. Security & best practices
 
-* **Jangan** commit token ke GitHub. Selalu gunakan secret manager (Colab `userdata`, GitHub Secrets, atau `getpass`).
-* Jika share notebook publik, hapus baris yang berisi token plain text.
-* Pin versi paket saat reproducibility penting.
+* **Never commit tokens** to GitHub.
+* Use Colab secrets, GitHub Secrets, or `getpass` for sensitive credentials.
+* Remove hardcoded tokens before sharing.
+* Pin library versions for reproducibility.
 
-## 11. Lisensi
+## 11. License
 
-Bebas untuk dipakai untuk belajar. Jika ingin dipublikasikan, tambahkan lisensi (mis. MIT) di repo.
+Free to use for learning purposes. Add an open-source license (e.g., MIT) before publishing the repo.
 
 ---
 
-## Bantuan selanjutnya
+## Next steps
 
-Kalau mau, aku bisa:
+I can help you:
 
-* Buatkan versi README bahasa Inggris.
-* Buat file `requirements.txt` atau `runtime.txt` untuk Colab.
-* Benahi notebook: perbaiki typo, gabungkan pip install, dan tambahkan cell interaktif untuk memasukkan token.
+* Create a cleaner English README + Colab badge
+* Provide `requirements.txt` and `runtime.txt` for Colab
+* Refactor the notebook (fix typos, merge installs, add safe token handling)
 
-Kalau mau, beri tahu mana yang mau kamu perbaiki dulu — aku langsung editkan.
+Let me know which one you’d like t
