@@ -3,6 +3,8 @@
 **Deskripsi singkat**
 Notebook ini berisi contoh eksperimen dasar di Google Colab: instalasi paket, pengambilan token dari Colab, pemanggilan API model (Replicate & Hugging Face), contoh penggunaan `transformers` (Flan-T5), serta contoh loop dan pembacaan CSV. README ini menjelaskan setiap bagian, cara setup, masalah umum, dan saran perbaikan.
 
+📂 **Link ke Notebook Colab:** [Buka di Google Colab](https://colab.research.google.com/drive/1BbV_ZsSlhclE9wFd2-oun67hEpjx7iGa?usp=sharing)
+
 ---
 
 ## Daftar isi
