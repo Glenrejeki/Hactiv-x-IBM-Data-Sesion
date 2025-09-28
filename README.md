@@ -205,3 +205,73 @@ I can help you:
 * Refactor the notebook (fix typos, merge installs, add safe token handling)
 
 Let me know which one you’d like t
+
+
+# 📘 Proyek IBM Hacktiv – Data Analytics
+
+## 👤 Identitas
+- **Nama:** Glen Rejeki Sitorus  
+- **NIM:** 11S23024  
+- **Kelas:** S1 Informatika  
+
+---
+
+## 📌 Pendahuluan
+Repositori ini berisi dokumentasi praktikum dan proyek untuk program **IBM Hacktiv**.  
+Terdiri dari dua bagian utama:  
+
+1. **Dokumentasi Belajar**  
+   - Instalasi dependensi (Replicate, Hugging Face, Kaggle API).  
+   - Eksperimen sederhana dengan Google Colab.  
+
+2. **Capstone Project – Data Analytics**  
+   - Analisis dataset **Iris** menggunakan Python (pandas) di Google Colab.  
+
+---
+
+## 📊 Capstone Project — Iris Dataset
+
+### 🎯 Tujuan
+- Membaca dataset Iris.  
+- Melakukan eksplorasi awal (EDA sederhana).  
+- Menampilkan ukuran data (`shape`) dan beberapa baris awal (`head()`).  
+
+---
+
+### 📂 Dataset
+- **Seaborn repo:**  
+  [iris.csv (GitHub Seaborn)](https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv)  
+
+- **Kaggle version:**  
+  [Iris Dataset (Kaggle)](https://www.kaggle.com/datasets/uciml/iris)  
+
+---
+
+### ⚙️ Langkah Analisis
+1. Membaca dataset dari repo Seaborn.  
+2. Mengecek jumlah baris dan kolom.  
+3. Menampilkan data awal.  
+4. Membandingkan dataset dari Seaborn vs Kaggle (perbedaan nama kolom).  
+
+---
+
+### 📜 Kode Program
+
+```python
+import pandas as pd
+
+# === Dataset Iris dari seaborn repo ===
+url = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv"
+df = pd.read_csv(url)
+
+print("Dataset berhasil dibaca!")
+print("Shape:", df.shape)
+print(df.head())
+
+# === Jika upload manual (misal dari Kaggle) ===
+# from google.colab import files
+# uploaded = files.upload()
+# df_kaggle = pd.read_csv("Iris.csv")
+# print(df_kaggle.shape)
+# print(df_kaggle.head())
+
